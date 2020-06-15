@@ -1,4 +1,4 @@
-﻿;
+;
 ; AutoHotkey Version: 1.x
 ; Language:       English
 ; Platform:       Win9x/NT
@@ -14,7 +14,6 @@
 ; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-StringCaseSense, On
 
 AnyKeyPressedOtherThanSpace(mode = "P") {
     keys = 1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./
@@ -23,83 +22,22 @@ AnyKeyPressedOtherThanSpace(mode = "P") {
         isDown :=  GetKeyState(A_LoopField, mode)
         if(isDown)
             return True
-    }
-
+    }   
     return False
-}
-
-
-supressed := False
-RestoreInput(){
-    BlockInput, Off
-    Global supressed
-    supressed := False
-}
-
-SupressInput(){
-    Global supressed
-    supressed := True
-    BlockInput, On
-    SetTimer, RestoreInput, -180
-}
-
-ModifierStates := ""
-UpdateModifierStates(){
-    Global ModifierStates
-    if (supressed){
-        return
-    }
-    ModifierStates := ""
-    
-    if GetKeyState("LWin", "P") || GetKeyState("RWin", "P")    {
-        ModifierStates .= "#"
-    }
-
-    if GetKeyState("Ctrl", "P"){
-        ModifierStates .= "^"
-    }
-
-    if GetKeyState("Alt", "P"){
-        ModifierStates .= "!"
-    }
-
-    if GetKeyState("Shift", "P"){
-        ModifierStates .= "+"
-    }
-}
-
-SendKey(Key, num=1){
-    Global ModifierStates
-    Loop, %num%{
-        Send, %ModifierStates%%Key%
-    }
-}
- 
-ReleaseModifier(){
-    global space_up
-    if (not space_up){
-        space_up := true
-    }
-    Send, {F24}
 }
  
 Space Up::
-    Send {Blind}{Space up}
     space_up := true
-    SendEvent, {F24}
+    Send, {F24}
     return
 Space::
     if AnyKeyPressedOtherThanSpace(){
         SendInput, {Blind}{Space}
         Return
     }
-    if (GetKeyState(LShift, mode)){
-        SendInput ^{Space}
-        Return
-    }    
-    inputed := False
     space_up := False
-    input, UserInput, L1 T0.05, {F24}
+    inputed := False
+    input, UserInput, L1 T0.1, {F24}
     if (space_up) {
         Send, {Blind}{Space}
         return
@@ -107,7 +45,6 @@ Space::
         Send, {Space}%UserInput%
         return
     }
-    SetTimer, ReleaseModifier, -18000
     while true{
         input, UserInput, L1, {F24}
         if (space_up) {
@@ -115,53 +52,45 @@ Space::
                 Send, {Blind}{Space}
             }
             break
-        }else{
+        }else if (StrLen(UserInput) == 1) {
             inputed := True
             StringLower, UserInput, UserInput
-            UpdateModifierStates()
-            SupressInput()
             if (UserInput == "1")
-                SendKey("{F1}")
+                Send, {Blind}{F1}
             else if (UserInput == "2")
-                SendKey("{F2}")
+                Send, {Blind}{F2}
             else if (UserInput == "3")
-                SendKey("{F3}")
+                Send, {Blind}{F3}
             else if (UserInput == "4")
-                SendKey("{F4}")
+                Send, {Blind}{F4}
             else if (UserInput == "5")
-                SendKey("{F5}")
+                Send, {Blind}{F5}
             else if (UserInput == "6")
-                SendKey("{F6}")
+                Send, {Blind}{F6}
             else if (UserInput == "7")
-                SendKey("{F7}")
+                Send, {Blind}{F7}
             else if (UserInput == "8")
-                SendKey("{F8}")
+                Send, {Blind}{F8}
             else if (UserInput == "9")
-                SendKey("{F9}")
+                Send, {Blind}{F9}
             else if (UserInput == "0")
-                SendKey("{F10}")
+                Send, {Blind}{F10}
             else if (UserInput == "-")
-                SendKey("{F11}")
+                Send, {Blind}{F11}
             else if (UserInput == "=")
-                SendKey("{F12}")
+                Send, {Blind}{F12}
             else if (UserInput == "j")
-                SendKey("{PgDn}")
+                Send, {Blind}{PgDn}
             else if (UserInput == "k")
-                SendKey("{PgUp}")
+                Send, {Blind}{PgUp}
             else if (UserInput == "h")
-                SendKey("{Home}")
+                Send, {Blind}{Home}
             else if (UserInput == "l")
-                SendKey("{End}")
+                Send, {Blind}{End}
             else if (UserInput == "d")
-                SendKey("{Del}")
-            else if (UserInput == "r"){
-                RestoreInput()
-                break
-            }else if (UserInput == "`t")
-                SendKey(" ")
+                Send, {Blind}{DEL}
             else
                 Send, {Blind}%UserInput%
         }
     }
-    RestoreInput()
     return
